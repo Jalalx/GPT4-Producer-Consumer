@@ -25,3 +25,9 @@ Producer (Python): The producer Python script reads unprocessed rows from the My
 Kafka Broker: The Kafka broker receives messages from the producer and stores them in the my_tasks_topic topic. The broker runs inside a Docker container.
 
 Consumer (Python): The consumer Python script subscribes to the Kafka topic my_tasks_topic and processes messages sent by the producer. The consumer runs inside a Docker container.
+
+## How run the code?
+You would need docker to run this:
+```sh
+docker-compose up
+```
