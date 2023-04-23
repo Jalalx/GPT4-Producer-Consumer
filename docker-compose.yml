@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.33-oracle
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuserpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - backend
+
+  kafka:
+    image: bitnami/kafka:3.4.0
+    container_name: kafka
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    depends_on:
+      - zookeeper
+    networks:
+      - backend
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8.1
+    container_name: zookeeper
+    environment:
+      ZOO_PORT_NUMBER: 2181
+      ZOO_TICK_TIME: 2000
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - backend
+
+  producer_app:
+    build: ./producer
+    container_name: producer_app
+    depends_on:
+      - zookeeper
+      - mysql
+      - kafka
+    networks:
+      - backend
+  
+  consumer_app:
+    build: ./consumer
+    container_name: consumer_app
+    depends_on:
+      - zookeeper
+      - mysql
+      - kafka
+    networks:
+      - backend
+
+volumes:
+  mysql_data:
+
+networks:
+  backend:
